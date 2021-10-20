@@ -24,20 +24,51 @@ object lab3 extends App {
     }
   }
 
-  println(young(2))
-  for (i <- 0 to 10)
-    println(s"[${i}] young: ${young(i)}    old: ${old(i)}")
+  //  println(young(2))
+  //  for (i <- 0 to 10)
+  //    println(s"[${i}] young: ${young(i)}    old: ${old(i)}")
 
-  //  Sortowanie listy rekurencyjnie. Chcemy zeby było posortowane rosnąco
-  def putInList(l: List[Int], rest: List[Int]): List[Int] = {
-    l
-  }
 
   def sortList(l: List[Int]): List[Int] = {
-    l match {
-      case Nil => l
-      case h :: t => putInList(List(h), t)
+    def wstawSort(posortowane: List[Int], chaos: List[Int]): List[Int] =
+      chaos match {
+        case Nil => posortowane
+        case h :: t => wstawSort(wstaw(posortowane, h), t)
+      }
+
+    def wstaw(l: List[Int], n: Int): List[Int] = {
+      l match {
+        case Nil => List(n)
+        case h :: t => if (n < h) n :: l else h :: wstaw(t, n)
+      }
     }
+
+    wstawSort(Nil, l)
   }
 
+  def sortListParam[T](l: List[T], lt: (T, T) => Boolean): List[T] = {
+    def wstawSort(posortowane: List[T], chaos: List[T]): List[T] =
+      chaos match {
+        case Nil => posortowane
+        case h :: t => wstawSort(wstaw(posortowane, h), t)
+      }
+
+    def wstaw(l: List[T], n: T): List[T] = {
+      l match {
+        case Nil => List(n)
+        case h :: t => if (lt(n, h)) n :: l else h :: wstaw(t, n)
+      }
+    }
+
+    wstawSort(Nil, l)
+  }
+
+  val l = List(5, 2, 1, 9, 6, 7, 3, 5, 7, 0)
+  println(sortList(l))
+
+  def lt(a: Int, b: Int): Boolean = a < b
+  def gt(a: Int, b: Int): Boolean = a > b
+
+  println(sortListParam(l, lt))
+  println(sortListParam(l, gt))
 }
